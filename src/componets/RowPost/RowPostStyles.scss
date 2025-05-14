@@ -1,0 +1,251 @@
+/* Premium Enhanced Swiper Carousel */
+.SwiperStyle {
+  padding: 2rem 0;
+}
+
+.SwiperStyle:hover .swiper-button-prev,
+.SwiperStyle:hover .swiper-button-next,
+.SwiperStyle:hover .swiper-pagination {
+  opacity: 1;
+  transition: all 400ms ease-out;
+}
+
+/* Navigation arrows */
+.swiper-button-prev,
+.swiper-button-next {
+  color: white;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.3);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 400ms ease-out;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background: #1e90ff;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(30, 144, 255, 0.6);
+}
+
+/* Pagination styling */
+.swiper-pagination {
+  position: initial;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  margin-top: 1rem;
+  transition: all 400ms ease-out;
+}
+
+.swiper-pagination-bullet {
+  cursor: pointer;
+  width: 25px;
+  height: 4px;
+  display: inline-block;
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  margin: 0 3px !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #1e90ff;
+  width: 35px;
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+}
+
+.swiper-pagination-bullet:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Slide wrapper effects */
+.swiper-wrapper {
+  padding: 40px 0;
+}
+
+.swiper-wrapper:hover .swiper-slide {
+  transform: translateX(-17%);
+  filter: brightness(0.7) blur(1px);
+  opacity: 0.8;
+  transition: all 400ms ease-out;
+}
+
+.swiper-slide:hover ~ .swiper-slide {
+  transform: translateX(17%);
+}
+
+/* Individual slide styling */
+.swiper-slide {
+  transition: all 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.swiper-slide:hover {
+  transform: scale(1.5) !important;
+  opacity: 1 !important;
+  filter: brightness(1.1) contrast(1.05) !important;
+  z-index: 20;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 400ms ease;
+}
+
+.swiper-slide:hover img {
+  transform: scale(1.05);
+}
+
+/* Content overlay */
+.content {
+  transition: all 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 0, 0, 0.5) 70%,
+    transparent
+  );
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 1rem;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.content h3 {
+  margin-bottom: 0.5rem;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 400ms ease 0.1s;
+}
+
+.content p {
+  margin-bottom: 1rem;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 400ms ease 0.2s;
+}
+
+.content .btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #1e90ff;
+  color: white;
+  border-radius: 4px;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 400ms ease 0.3s;
+}
+
+.swiper-slide:hover .content {
+  bottom: 0;
+}
+
+.swiper-slide:hover .content h3,
+.swiper-slide:hover .content p,
+.swiper-slide:hover .content .btn {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Large slide variant */
+.swiper-slide.large:hover {
+  transform: scale(1.25) !important;
+}
+
+/* YouTube video styling */
+.YouTubeVid {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.YouTubeVid iframe {
+  height: 27rem;
+  width: 100%;
+  transition: all 400ms ease;
+}
+
+.YouTubeVid:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Custom hover state for slides */
+.swiper-slide::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(30, 144, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.swiper-slide:hover::after {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media only screen and (max-width: 1050px) {
+  .swiper-wrapper {
+    padding: 20px 0;
+  }
+  
+  .swiper-wrapper:hover .swiper-slide {
+    transform: translateX(-5%);
+    filter: brightness(0.8);
+  }
+  
+  .swiper-slide:hover ~ .swiper-slide {
+    transform: translateX(5%);
+  }
+  
+  .swiper-slide:hover {
+    transform: scale(1.2) !important;
+  }
+  
+  .swiper-slide.large:hover {
+    transform: scale(1.1) !important;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .swiper-wrapper:hover .swiper-slide {
+    transform: translateX(0);
+    filter: brightness(0.9);
+  }
+  
+  .swiper-slide:hover ~ .swiper-slide {
+    transform: translateX(0);
+  }
+  
+  .swiper-slide:hover {
+    transform: scale(1.05) !important;
+  }
+  
+  .YouTubeVid iframe {
+    height: 13rem;
+  }
+}
+
+/* Hide YouTube title bar */
+.ytp-title-expanded-heading {
+  display: none;
+}
