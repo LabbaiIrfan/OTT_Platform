@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import Banner from "../componets/Banner/Banner";
 import Footer from "../componets/Footer/Footer";
 import RowPost from "../componets/RowPost/RowPost";
+import LiveNews from "../componets/RowPost/LiveNews";
 import {
   originals,
   trending,
@@ -35,8 +36,16 @@ function Home() {
   return (
     <div>
       <Banner url={trending}></Banner>
+
       <div className="w-[99%] ml-1">
         <RowPost first title="Trending" url={trending} key={trending}></RowPost>
+        <RowPost
+          title="Netflix Originals"
+          islarge
+          url={originals}
+          key={originals}
+        ></RowPost>
+              <LiveNews />
         <RowPost title="Animated" url={Animated} key={Animated}></RowPost>
         {watchedMovies.length != 0 ? (
           <RowPost
@@ -45,14 +54,10 @@ function Home() {
             key={"Watched Movies"}
           ></RowPost>
         ) : null}
-        <RowPost
-          title="Netflix Originals"
-          islarge
-          url={originals}
-          key={originals}
-        ></RowPost>
+
         <RowPost
           title="Trending Series"
+          islarge
           url={trendingSeries}
           key={trendingSeries}
         ></RowPost>
