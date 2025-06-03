@@ -10,7 +10,6 @@ import {
   collection
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { Fade } from "react-reveal";
 import toast, { Toaster } from "react-hot-toast";
 
 import { AuthContext } from "../Context/UserContext";
@@ -234,7 +233,7 @@ function Profile() {
             }}
           />
         ) : null}
-        <Fade>
+        <div>
           <div className="bg-[#000000bf] p-5 md:p-12 rounded-md">
             <h1 className="text-4xl text-white font-bold mb-4 md:mb-8">
               Edit your Profile
@@ -408,7 +407,7 @@ function Profile() {
               )}
             </div>
           </div>
-        </Fade>
+        </div>
       </div>
     </div>
   );
