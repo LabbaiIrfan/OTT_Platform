@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useCallback, useRef } from "rea
 import { API_KEY, imageUrl } from "../../Constants/Constance";
 import axios from "../../axios";
 import { PopUpContext } from "../../Context/moviePopUpContext";
-import { Fade } from "react-reveal";
 import StarRatings from "react-star-ratings";
 import MoviePopUp from "../PopUp/MoviePopUp";
 import usePlayMovie from "../../CustomHooks/usePlayMovie";
@@ -184,92 +183,90 @@ function Banner({ url }) {
         )}
         
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pb-24 sm:pb-32">
-          <Fade key={currentMovieIndex} bottom distance="20px">
-            <div className="max-w-3xl">
-              {!isLoading && currentMovie ? (
-                <>
-                  <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-4 border-l-4 pl-4 border-red-600">
-                    {currentMovie.title || currentMovie.name}
-                  </h1>
-                  
-                  <div className="flex items-center space-x-4 mb-4">
-                    {currentMovie.vote_average && (
-                      <div className="flex items-center bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <StarRatings
-                          rating={currentMovie.vote_average / 2}
-                          starRatedColor="#e11d48"
-                          numberOfStars={5}
-                          name="rating"
-                          starDimension="18px"
-                          starSpacing="2px"
-                        />
-                        <span className="ml-2 text-white font-medium text-sm">
-                          {currentMovie.vote_average.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {(currentMovie.release_date || currentMovie.first_air_date) && (
-                      <span className="text-gray-200 text-sm font-medium px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full">
-                        {new Date(currentMovie.release_date || currentMovie.first_air_date).getFullYear()}
+          <div key={currentMovieIndex} className="max-w-3xl">
+            {!isLoading && currentMovie ? (
+              <>
+                <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-4 border-l-4 pl-4 border-red-600">
+                  {currentMovie.title || currentMovie.name}
+                </h1>
+                
+                <div className="flex items-center space-x-4 mb-4">
+                  {currentMovie.vote_average && (
+                    <div className="flex items-center bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                      <StarRatings
+                        rating={currentMovie.vote_average / 2}
+                        starRatedColor="#e11d48"
+                        numberOfStars={5}
+                        name="rating"
+                        starDimension="18px"
+                        starSpacing="2px"
+                      />
+                      <span className="ml-2 text-white font-medium text-sm">
+                        {currentMovie.vote_average.toFixed(1)}
                       </span>
-                    )}
-                    
-                    <span className="text-white px-3 py-1 text-sm font-medium bg-red-600/90 rounded-full">
-                      Premium
+                    </div>
+                  )}
+                  
+                  {(currentMovie.release_date || currentMovie.first_air_date) && (
+                    <span className="text-gray-200 text-sm font-medium px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full">
+                      {new Date(currentMovie.release_date || currentMovie.first_air_date).getFullYear()}
                     </span>
-                  </div>
+                  )}
+                  
+                  <span className="text-white px-3 py-1 text-sm font-medium bg-red-600/90 rounded-full">
+                    Premium
+                  </span>
+                </div>
 
-                  <p className="text-gray-200 text-base md:text-lg mb-8 line-clamp-3 max-w-2xl">
-                    {currentMovie.overview}
-                  </p>
+                <p className="text-gray-200 text-base md:text-lg mb-8 line-clamp-3 max-w-2xl">
+                  {currentMovie.overview}
+                </p>
 
-                  <div className="flex flex-wrap gap-4">
-                    <button
-                      onClick={() => playMovie(currentMovie)}
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-red-600/20"
+                <div className="flex flex-wrap gap-4">
+                  <button
+                    onClick={() => playMovie(currentMovie)}
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-red-600/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      Play Now
-                    </button>
-                    <button
-                      onClick={() => handleMoviePopup(currentMovie)}
-                      className="bg-gray-800/80 backdrop-blur-sm hover:bg-gray-700 text-white font-medium flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300"
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Play Now
+                  </button>
+                  <button
+                    onClick={() => handleMoviePopup(currentMovie)}
+                    className="bg-gray-800/80 backdrop-blur-sm hover:bg-gray-700 text-white font-medium flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      More Info
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <LoadingBannerContent />
-              )}
-            </div>
-          </Fade>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    More Info
+                  </button>
+                </div>
+              </>
+            ) : (
+              <LoadingBannerContent />
+            )}
+          </div>
         </div>
       </div>
 
