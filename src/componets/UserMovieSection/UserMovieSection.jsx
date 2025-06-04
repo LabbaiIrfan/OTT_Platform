@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import MoviePopUp from "../PopUp/MoviePopUp";
+import MoviePopUp from "../RowPost/MoviePopUp";
 import { imageUrl2, API_KEY } from "../../Constants/Constance";
 import useUpdateMylist from "../../CustomHooks/useUpdateMylist";
 import usePlayMovie from "../../CustomHooks/usePlayMovie";
