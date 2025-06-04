@@ -3,7 +3,7 @@ import { API_KEY, imageUrl } from "../../Constants/Constance";
 import axios from "../../axios";
 import { PopUpContext } from "../../Context/moviePopUpContext";
 import StarRatings from "react-star-ratings";
-import MoviePopUp from "../PopUp/MoviePopUp";
+import MoviePopUp from "../RowPost/MoviePopUp";
 import usePlayMovie from "../../CustomHooks/usePlayMovie";
 
 function Banner({ url }) {
