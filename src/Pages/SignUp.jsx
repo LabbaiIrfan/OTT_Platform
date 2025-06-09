@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useContext } from "react";
-import GlobixLogo from "../images/globix.png"
+import StreamVibeLogo from "../images/StreamVibe.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -91,8 +91,8 @@ function SignUp() {
             <div className="p-6 space-y-4 md:space-y-6 sm:p-12">
               <div className="w-full flex justify-center mb-6">
                 <img
-                  src={GlobixLogo}
-                  alt="Netflix Logo"
+                  src={StreamVibeLogo}
+                  alt="StreamVibe Logo"
                   className="h-16"
                 />
               </div>

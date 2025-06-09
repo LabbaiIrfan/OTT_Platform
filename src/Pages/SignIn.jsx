@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import GlobixLogo from "../images/globix.png"
+import StreamVibeLogo from "../images/StreamVibe.png";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -128,7 +128,7 @@ function SignIn() {
             <div className="p-6 space-y-4 md:space-y-6 sm:p-12">
               <div className="w-full flex justify-center mb-6">
                 <img
-                  src={GlobixLogo}
+                  src={StreamVibeLogo}
                   alt="Netflix Logo"
                   className="h-16"
                 />

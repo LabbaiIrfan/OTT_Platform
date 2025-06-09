@@ -3,7 +3,7 @@ import { Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import { AuthContext } from "../../Context/UserContext";
-import GlobixLogo from "../../images/globix.png";
+import StreamVibeLogo from "../../images/StreamVibe.png";
 
 const NavLink = ({ to, children, className = "" }) => (
   <Link to={to} className={`group relative px-6 py-3 font-medium text-white/80 transition-all duration-300 rounded-full hover:text-white hover:bg-red-500/20 hover:scale-105 ${className}`}>
@@ -63,7 +63,7 @@ function Navbar({ playPage }) {
             {/* Logo */}
             <Link to="/" className="flex-shrink-0 transform hover:scale-110 transition-transform duration-300">
               <div className="p-2 rounded-xl bg-gradient-to-r from-white/5 to-white/10 border border-white/20 shadow-lg hover:shadow-white/20 transition-all duration-300">
-                <img className="h-10 w-auto brightness-110 hover:brightness-125 transition-all duration-300" src={GlobixLogo} alt="GLOBIX" />
+                <img className="h-10 w-auto brightness-110 hover:brightness-125 transition-all duration-300" src={StreamVibeLogo} alt="GLOBIX" />
               </div>
             </Link>
 

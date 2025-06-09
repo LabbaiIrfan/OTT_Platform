@@ -1,412 +1,222 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { getAuth, updateProfile, signOut } from "firebase/auth";
-import { db } from "../Firebase/FirebaseConfig";
 import {
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-  collection
+  doc, setDoc, getDoc, updateDoc, serverTimestamp,
 } from "firebase/firestore";
+import { db } from "../Firebase/FirebaseConfig";
+import { AuthContext } from "../Context/UserContext";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
-import { AuthContext } from "../Context/UserContext";
 import WelcomePageBanner from "../images/WelcomePageBanner.jpg";
-
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 function Profile() {
   const { User } = useContext(AuthContext);
-
   const [profilePic, setProfilePic] = useState("");
-  const [newProfilePicURL, setNewProfilePicURL] = useState("");
-  const [newProfilePic, setNewProfilePic] = useState("");
-  const [isUserNameChanged, setIsUserNameChanged] = useState(false);
+  const [previewPic, setPreviewPic] = useState("");
+  const [newFile, setNewFile] = useState(null);
   const [userName, setUserName] = useState("");
-  const [isMyListUpdated, setIsMyListUpdated] = useState(false);
-
+  const inputRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (User != null) {
-      console.log(User.photoURL, "hello");
+    if (User) {
       setProfilePic(User.photoURL);
-      fetchUserData();
+      loadUserData();
     }
   }, [User]);
 
-  // Fetch user data from Firestore
-  const fetchUserData = async () => {
-    if (!User) return;
-    
+  const loadUserData = async () => {
     try {
-      const userDocRef = doc(db, "users", User.uid);
-      const userDoc = await getDoc(userDocRef);
-      
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        if (userData.photoURL) {
-          setProfilePic(userData.photoURL);
-        }
+      const userRef = doc(db, "users", User.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const { photoURL } = userSnap.data();
+        if (photoURL) setProfilePic(photoURL);
       } else {
-        // Create user document if it doesn't exist
-        await setDoc(userDocRef, {
+        await setDoc(userRef, {
           displayName: User.displayName || "",
           email: User.email,
           photoURL: User.photoURL || "",
           uid: User.uid,
           createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
-      // Don't alert here to avoid annoying the user on initial load
+      toast.error("Failed to load user data.");
     }
   };
 
-  const inputRef = useRef(null);
-
-  const handleClick = () => {
-    inputRef.current.click();
-  };
-
-  function notify() {
-    toast.success("  Data Updated Successfully  ");
-  }
-
-  const handleFileChange = (event) => {
-    const fileObj = event.target.files[0];
-    if (!fileObj) {
-      return;
-    }
-    
-    setNewProfilePic(fileObj);
-    
-    // Convert file to base64 for storage in Firestore
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setNewFile(file);
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64String = e.target.result;
-      setNewProfilePicURL(base64String);
-    };
-    reader.readAsDataURL(fileObj);
-    
-    event.target.value = null;
+    reader.onload = (ev) => setPreviewPic(ev.target.result);
+    reader.readAsDataURL(file);
   };
 
-  const changeUserName = async (e) => {
-    e.preventDefault();
-    
-    if (!User) return;
-    
-    try {
-      const userDocRef = doc(db, "users", User.uid);
-      const updateData = {};
-      
-      // Update username if changed
-      if (isUserNameChanged && userName !== "") {
-        updateData.displayName = userName;
-        
-        // Also update in Auth
-        const auth = getAuth();
+  const updateProfileInfo = async () => {
+    const auth = getAuth();
+    const userRef = doc(db, "users", User.uid);
+    const updates = {};
+
+    if (userName) {
+      updates.displayName = userName;
+      try {
         await updateProfile(auth.currentUser, { displayName: userName });
+      } catch (error) {
+        console.error("Error updating Firebase Auth display name:", error);
+        toast.error("Failed to update display name in authentication.");
       }
-      
-      // Update profile picture if changed
-      if (newProfilePicURL !== "") {
-        updateData.photoURL = newProfilePicURL;
-        
-        // Also update in Auth
-        const auth = getAuth();
-        await updateProfile(auth.currentUser, { photoURL: newProfilePicURL });
-        setProfilePic(newProfilePicURL);
-      }
-      
-      // Only update if there are changes
-      if (Object.keys(updateData).length > 0) {
-        updateData.updatedAt = serverTimestamp();
-        
-        // Check if document exists first
-        const docSnap = await getDoc(userDocRef);
-        
-        if (docSnap.exists()) {
-          // Update existing document
-          await updateDoc(userDocRef, updateData);
-        } else {
-          // Create new document with complete user data
-          await setDoc(userDocRef, {
-            displayName: userName || User.displayName || "",
-            email: User.email,
-            photoURL: newProfilePicURL || User.photoURL || "",
-            uid: User.uid,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-        }
-        
-        notify();
-        setIsMyListUpdated(true);
-        
-        // Reset states
-        setNewProfilePic("");
-        if (isUserNameChanged) {
-          setIsUserNameChanged(false);
-        }
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Permission error: " + error.message);
     }
-  };
 
-  const updateProfilePic = async (imageURL) => {
-    if (!User) return;
-    
-    try {
-      // Update in Firestore
-      const userDocRef = doc(db, "users", User.uid);
-      
-      // Check if document exists first
-      const docSnap = await getDoc(userDocRef);
-      
-      if (docSnap.exists()) {
-        // Update existing document
-        await updateDoc(userDocRef, {
-          photoURL: imageURL,
-          updatedAt: serverTimestamp()
-        });
-      } else {
-        // Create new document with complete user data
-        await setDoc(userDocRef, {
-          displayName: User.displayName || "",
-          email: User.email,
-          photoURL: imageURL,
-          uid: User.uid,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+    if (previewPic && previewPic !== profilePic) { // Only update if picture has changed
+      updates.photoURL = previewPic;
+      try {
+        await updateProfile(auth.currentUser, { photoURL: previewPic });
+        setProfilePic(previewPic); // Update local state for immediate visual
+      } catch (error) {
+        console.error("Error updating Firebase Auth photo URL:", error);
+        toast.error("Failed to update profile picture in authentication.");
       }
-      
-      // Update in Auth
-      const auth = getAuth();
-      await updateProfile(auth.currentUser, { photoURL: imageURL });
-      
-      setProfilePic(imageURL);
-      notify();
-    } catch (error) {
-      console.error("Error updating profile picture:", error);
-      alert("Permission error: " + error.message);
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updates.updatedAt = serverTimestamp();
+      try {
+        const userSnap = await getDoc(userRef);
+        userSnap.exists()
+          ? await updateDoc(userRef, updates)
+          : await setDoc(userRef, {
+              ...updates,
+              email: User.email,
+              uid: User.uid,
+              createdAt: serverTimestamp(),
+            });
+        toast.success("Profile updated successfully!");
+      } catch (error) {
+        console.error("Error updating user document:", error);
+        toast.error("Failed to save profile changes.");
+      }
+    } else {
+      toast("No changes to save.", { icon: 'ℹ️' });
     }
   };
 
   const SignOut = () => {
-    const auth = getAuth();
-    signOut(auth)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+    getAuth().signOut().then(() => {
+      toast.success("Signed out successfully!");
+      navigate("/");
+    }).catch(error => {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out.");
+    });
   };
 
-  return (
-    <div>
-      <div
-        className="flex h-screen justify-center items-center"
-        style={{
-          backgroundImage: `linear-gradient(0deg, hsl(0deg 0% 0% / 73%) 0%, hsl(0deg 0% 0% / 73%) 35%), url(${WelcomePageBanner})`,
-        }}
-      >
-        {isMyListUpdated ? (
-          <Toaster
-            toastOptions={{
-              style: {
-                padding: "1.5rem",
-                backgroundColor: "##f4fff4",
-                borderLeft: "6px solid green",
-              },
-            }}
-          />
-        ) : null}
-        <div>
-          <div className="bg-[#000000bf] p-5 md:p-12 rounded-md">
-            <h1 className="text-4xl text-white font-bold mb-4 md:mb-8">
-              Edit your Profile
-            </h1>
-            <div className="flex justify-center flex-col items-center md:flex-row md:items-start">
-              <img
-                className={
-                  profilePic
-                    ? "h-28 w-28 rounded-full cursor-pointer mb-3 md:mr-16"
-                    : "h-28 w-28 rounded-full cursor-pointer mb-3 md:mr-16"
-                }
-                src={
-                  profilePic
-                    ? `${profilePic}`
-                    : `https://www.citypng.com/public/uploads/preview/profile-user-round-red-icon-symbol-download-png-11639594337tco5j3n0ix.png`
-                }
-                alt="NETFLIX"
-              />
-              <div>
-                <hr className="mb-2 h-px bg-gray-500 border-0 dark:bg-gray-700"></hr>
-                <h1 className="text-white text-lg font-medium mb-2">
-                  User Name
-                </h1>
-                <input
-                  type="text"
-                  onChange={(e) =>
-                    setUserName(e.target.value) || setIsUserNameChanged(true)
-                  }
-                  className="block w-full rounded-md bg-stone-900 text-white border-gray-300 p-2 mb-6 focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
-                  placeholder={User ? User.displayName : null}
-                />
-                <h1 className="text-white text-lg font-medium mb-2">Email</h1>
-                <h1 className="text-white text-xl bg-stone-900 p-2 rounded mb-4 md:pr-52">
-                  {User ? User.email : null}
-                </h1>
-                <h1 className="text-white text-xl p-2 rounded mb-4">
-                  Unique ID : {User ? User.uid : null}
-                </h1>
-                <hr className="h-px bg-gray-500 border-0 mb-4 md:mb-10 dark:bg-gray-700"></hr>
+  const profileOptions = [
+    "https://i.pinimg.com/originals/ba/2e/44/ba2e4464e0d7b1882cc300feceac683c.png",
+    "https://i.pinimg.com/736x/db/70/dc/db70dc468af8c93749d1f587d74dcb08.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png",
+    "https://ih0.redbubble.net/image.618363037.0853/flat,1000x1000,075,f.u2.jpg",
+  ];
 
-                <h1 className="text-white text-lg font-medium mb-4">
-                  Who is Watching ?
-                </h1>
-                <div className="flex justify-between cursor-pointer mb-4 md:mb-8">
-                  <img
-                    onClick={() =>
-                      updateProfilePic(
-                        "https://i.pinimg.com/originals/ba/2e/44/ba2e4464e0d7b1882cc300feceac683c.png"
-                      )
-                    }
-                    className="w-16 h-16 rounded-md cursor-pointer"
-                    src="https://i.pinimg.com/originals/ba/2e/44/ba2e4464e0d7b1882cc300feceac683c.png"
-                  />
-                  <img
-                    onClick={() =>
-                      updateProfilePic(
-                        "https://i.pinimg.com/736x/db/70/dc/db70dc468af8c93749d1f587d74dcb08.jpg"
-                      )
-                    }
-                    className="w-16 h-16 rounded-md cursor-pointer"
-                    src="https://i.pinimg.com/736x/db/70/dc/db70dc468af8c93749d1f587d74dcb08.jpg"
-                  />
-                  <img
-                    onClick={() =>
-                      updateProfilePic(
-                        "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
-                      )
-                    }
-                    className="w-16 h-16 rounded-md cursor-pointer"
-                    src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
-                  />
-                  <img
-                    onClick={() =>
-                      updateProfilePic(
-                        "https://ih0.redbubble.net/image.618363037.0853/flat,1000x1000,075,f.u2.jpg"
-                      )
-                    }
-                    className="w-16 h-16 rounded-md cursor-pointer"
-                    src="https://ih0.redbubble.net/image.618363037.0853/flat,1000x1000,075,f.u2.jpg"
-                  />
-                  <input
-                    style={{ display: "none" }}
-                    ref={inputRef}
-                    type="file"
-                    onChange={handleFileChange}
-                  />
-                  <svg
-                    onClick={handleClick}
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 text-stone-600 cursor-pointer"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                {newProfilePicURL ? (
-                  <img className="h-30 w-72" src={newProfilePicURL} />
-                ) : null}
+  return (
+    <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center px-4 py-8"
+      style={{
+        backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url(${WelcomePageBanner})`,
+      }}
+    >
+      <Toaster />
+      <div className="bg-gradient-to-br from-gray-900 to-black p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700">
+        <h2 className="text-white text-4xl font-extrabold mb-8 text-center tracking-wide">Edit Profile</h2>
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
+          <div className="flex-shrink-0">
+            <img
+              src={
+                previewPic || profilePic || "https://www.citypng.com/public/uploads/preview/profile-user-round-red-icon-symbol-download-png-11639594337tco5j3n0ix.png"
+              }
+              className="w-32 h-32 rounded-full object-cover border-4 border-red-600 shadow-lg transition-transform duration-300 hover:scale-105"
+              alt="Profile Avatar"
+            />
+          </div>
+
+          <div className="flex-1 w-full">
+            <div className="mb-6">
+              <label htmlFor="username" className="text-gray-300 text-sm font-medium mb-2 block">Username</label>
+              <input
+                id="username"
+                type="text"
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder={User?.displayName || "Enter your username"}
+                className="w-full bg-gray-800 text-white rounded-lg px-5 py-3 outline-none border border-gray-700 focus:ring-2 focus:ring-red-600 focus:border-transparent transition duration-200"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="text-gray-300 text-sm font-medium mb-2 block">Email</label>
+              <div className="w-full bg-gray-800 text-gray-400 p-3 rounded-lg border border-gray-700 font-mono text-sm">
+                {User?.email}
               </div>
             </div>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={SignOut}
-                className="flex items-center border-[0.7px] border-white text-white font-medium sm:font-bold text-xs px-14 md:px-24 md:text-xl  py-3 rounded shadow hover:shadow-lg hover:bg-white hover:border-white hover:text-red-700 outline-none focus:outline-none mr-3 mb-1 ease-linear transition-all duration-150"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6 mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
-                  />
-                </svg>
-                SignOut
-              </button>
-              {userName !== "" || newProfilePic !== "" ? (
-                <button
-                  onClick={changeUserName}
-                  className="flex items-center bg-red-700 text-white font-medium sm:font-bold text-xs px-10 md:px-16 md:text-xl  py-3 rounded shadow hover:shadow-lg hover:bg-white hover:text-red-700 outline-none focus:outline-none mr-3 mb-1 ease-linear transition-all duration-150"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6 mr-2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-                    />
-                  </svg>
-                  Save and continue
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/")}
-                  className="flex items-center bg-red-700 text-white font-medium sm:font-bold text-xs px-10 md:px-16 md:text-xl  py-3 rounded shadow hover:shadow-lg hover:bg-white hover:text-red-700 outline-none focus:outline-none mr-3 mb-1 ease-linear transition-all duration-150"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6 mr-2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                    />
-                  </svg>
-                  Back to Home
-                </button>
-              )}
+
+            <div className="mb-6">
+              <label className="text-gray-300 text-sm font-medium mb-2 block">User ID</label>
+              <div className="w-full bg-gray-800 text-gray-400 p-3 rounded-lg border border-gray-700 break-words font-mono text-sm">
+                {User?.uid}
+              </div>
             </div>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <label className="text-gray-300 text-lg font-semibold mb-4 block">Choose Your Avatar</label>
+          <div className="flex items-center gap-4 flex-wrap">
+            {profileOptions.map((url, i) => (
+              <img
+                key={i}
+                src={url}
+                onClick={() => setPreviewPic(url)}
+                className={`w-16 h-16 rounded-full object-cover cursor-pointer border-2 ${previewPic === url ? 'border-red-600 ring-2 ring-red-600' : 'border-gray-600'} hover:scale-110 transition-all duration-200 shadow-md`}
+                alt={`Avatar option ${i + 1}`}
+              />
+            ))}
+            <button
+              onClick={() => inputRef.current.click()}
+              className="flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 text-gray-300 border-2 border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 shadow-md"
+              title="Upload custom avatar"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </button>
+            <input ref={inputRef} onChange={handleFileChange} type="file" className="hidden" accept="image/*" />
+          </div>
+          {previewPic && !profileOptions.includes(previewPic) && ( // Show preview only for uploaded image
+            <div className="mt-6">
+              <p className="text-gray-300 text-sm font-medium mb-2">Uploaded Image Preview:</p>
+              <img src={previewPic} className="w-full max-h-60 object-contain rounded-lg shadow-xl border border-gray-700" alt="Preview" />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+          <button
+            onClick={SignOut}
+            className="flex-1 bg-transparent border border-gray-600 text-gray-300 py-3 rounded-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-200 text-lg font-medium shadow-md"
+          >
+            Sign Out
+          </button>
+          <button
+            onClick={userName || previewPic ? updateProfileInfo : () => navigate("/")}
+            className="flex-1 bg-red-700 text-white py-3 rounded-lg hover:bg-red-600 transition-all duration-200 text-lg font-medium shadow-md"
+          >
+            {userName || previewPic ? "Save Changes" : "Back to Home"}
+          </button>
         </div>
       </div>
     </div>
